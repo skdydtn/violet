@@ -35,7 +35,7 @@ CTxMemPool mempool;
 unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
-uint256 hashGenesisBlock("0xc1745457e88c7c3a99c56a6dfe723ccf0adb7b020f1dfce7d5a6918557c34832");
+uint256 hashGenesisBlock("0xc1745457e88c7c3a99c56adfe723ccf0adb7b020f1dfce7d5a6918557c34832");
 static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // Violet: starting difficulty is 1 / 2^12
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
@@ -1087,11 +1087,6 @@ uint256 static GetOrphanRoot(const CBlockHeader* pblock)
 
 int64 static GetBlockValue(int nHeight, int64 nFees)
 {
-    int64 nSubsidy = 0 * COIN;
-	
-	if(nHeight == 1)
-        return 2000000000 * COIN;
-
     // Subsidy is cut in half every 840000 blocks, which will occur approximately every 4 years
     nSubsidy >>= (nHeight / 840000); // Violet: 840k blocks in ~4 years
 
@@ -2788,19 +2783,19 @@ bool InitBlockIndex() {
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CBigNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
         txNew.vout[0].nValue = 0 * COIN;
-        txNew.vout[0].scriptPubKey = CScript() << ParseHex("04b97b62582f7e71327d8c082ac750c5ec474296ceb238d79951978af9c31e3c91cbad7fb59ead8c21b9a4e9eb9034125068b827de3ef301f482a1e919044e6285") << OP_CHECKSIG;
+        txNew.vout[0].scriptPubKey = CScript() << ParseHex("04b97b62582f7e71327d8c082ac750c5ec474296cb238d79951978af9c31e3c91cbad7fb59ead8c21b9a4e9eb9034125068b827de3ef301f482a1e919044e6285") << OP_CHECKSIG;
         CBlock block;
         block.vtx.push_back(txNew);
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1540174472;
+        block.nTime    = 154017472;
         block.nBits    = 0x1e0ffff0;
-        block.nNonce   = 129712;
+        block.nNonce   = 12712;
 
         if (fTestNet)
         {
-            block.nTime    = 1540174472;
+            block.nTime    = 154014472;
             block.nNonce   = 129712;
         }
 
@@ -2809,44 +2804,7 @@ bool InitBlockIndex() {
         printf("%s\n", hash.ToString().c_str());
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
-        assert(block.hashMerkleRoot == uint256("0xcb83f403ea129b5bd3bddf8121aec6b519c9fd1afef5bb0ffd862eac2971e384"));
-		
-		// If genesis block hash does not match, then generate new genesis hash.
-        if (false && block.GetHash() != hashGenesisBlock) //<==완료후에는 false
-        {
-            printf("Searching for genesis block...\n");
-            // This will figure out a valid hash and Nonce if you're
-            // creating a different genesis block:
-            uint256 hashTarget = CBigNum().SetCompact(block.nBits).getuint256();
-            uint256 thash;
-            char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
-            loop
-            {
-                scrypt_1024_1_1_256_sp(BEGIN(block.nVersion), BEGIN(thash), scratchpad);
-                if (thash <= hashTarget)
-                    break;
-
-                if ((block.nNonce & 0xFFF) == 0)
-                {
-                    printf("nonce %08X: hash = %s (target = %s)\n", block.nNonce, thash.ToString().c_str(), hashTarget.ToString().c_str());
-                }
-                ++block.nNonce;
-
-                if (block.nNonce == 0)
-                {
-                    printf("NONCE WRAPPED, incrementing time\n");
-                    ++block.nTime;
-                }
-            }
-
-           printf("\n ============================================= \n");
-            printf("block.nTime = %u \n", block.nTime);
-            printf("block.nNonce = %u \n", block.nNonce);
-            printf("block.GetHash = %s\n", block.GetHash().ToString().c_str());
-            printf(" \n============================================= \n");
-        }
-		
-        block.print();
+        assert(block.hashMerkleRoot == uint256("0xcb83f403ea129b5bd3bddf8121aec6b519c9fd1afef5bb0ffd862eac297e384"));
         assert(hash == hashGenesisBlock);
 
         // Start new block file
